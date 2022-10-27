@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+body {
+    background: #9CC3D5FF;
+    font-family: 'Quicksand', sans-serif;
+    margin: auto;
+    box-sizing: border-box;
+    padding: 60px;
+}
+
+
+/**Left side CSS**/
+
+.left-box {
+    float: left;
+    box-shadow: 10px 10px 5px #128c7e;
+    background-color: #128c7e;
+    height: 961px;
+    width: 300px;
+    box-sizing: border-box;
+    margin: 15px 15px 15px 15px;
+}
+
+
+/**Left side content CSS**/
+
+.top-left {
+    position: relative;
+    height: 25%;
+    margin: 0px;
+}
+
+.name {
+    font-size: 40px;
+    color: white;
+    box-sizing: border-box;
+    padding: 05px 10px 20px 30px;
+}
+
+img {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.objective {
+    border-style: solid;
+    border-width: 0px 0px 2px 0px;
+    margin: 15px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.objective-img {
+    float: left;
+    width: 250px;
+    height: 250px;
+    border-radius: 161px;
+}
+
+.objective-text {
+    display: inline-block;
+    text-align: left;
+    color: white;
+    box-sizing: border-box;
+    margin: 15px 15px 15px 15px;
+}
+
+.phone {
+    border-style: solid;
+    border-width: 0px 0px 2px 0px;
+    box-sizing: border-box;
+    margin: 15px;
+    padding: 10px;
+}
+
+.phone-text {
+    display: inline-block;
+    text-align: left;
+    font-size: 20px;
+    color: white;
+    margin: 15px 15px 15px 15px;
+    box-sizing: border-box;
+}
+
+.email {
+    border-style: solid;
+    border-width: 0px 0px 0px 0px;
+    box-sizing: border-box;
+    margin: 15px;
+    padding: 10px;
+}
+
+.email-text {
+    display: inline-block;
+    text-align: left;
+    font-size: 20px;
+    color: white;
+    margin: 15px 15px 15px 15px;
+    box-sizing: border-box;
+}
+
+
+/**work experience box**/
+
+.work-experience {
+    float: left;
+    box-shadow: 10px 10px 5px #128c7e;
+    background-color: white;
+    height: 300px;
+    width: 850px;
+    margin: 15px 15px 15px 15px;
+    box-sizing: border-box;
+}
+
+.work-img {
+    float: left;
+    background-color: #128c7e;
+    height: auto;
+    width: 50px;
+    margin: 25px 30px 100% 30px;
+    box-sizing: border-box;
+}
+
+.job-box {
+    float: left;
+    border: solid;
+    border-width: 0px 0px 3px 0px;
+    box-sizing: border-box;
+    margin: 0px 10px 0px 0px;
+    padding: 10px 10px 10px 10px;
+    width: 195px;
+    height: auto;
+}
+
+.job-box:hover {
+    background-color: gray;
+}
+
+.job-title {
+    font-weight: bold;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.job-date {
+    color: #128c7e;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.job-description {
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+
+/**Education box**/
+
+.education {
+    float: left;
+    box-shadow: 10px 10px 5px #128c7e;
+    background-color: white;
+    box-sizing: border-box;
+    height: 300px;
+    width: 850px;
+    margin: 15px 15px 15px 15px;
+}
+
+
+/**interest box**/
+
+.interest {
+    float: left;
+    box-shadow: 10px 10px 5px #128c7e;
+    background-color: white;
+    box-sizing: border-box;
+    height: 300px;
+    width: 410px;
+    margin: 15px 15px 15px 15px;
+}
+
+
+/**Skills box**/
