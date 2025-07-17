@@ -3,7 +3,12 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useFonts } from '@expo-google-fonts/space-grotesk';
+import { 
+  useFonts,
+  SpaceGrotesk_400Regular,
+  SpaceGrotesk_500Medium,
+  SpaceGrotesk_700Bold,
+} from '@expo-google-fonts/space-grotesk';
 import * as SplashScreen from 'expo-splash-screen';
 
 import { LoginScreen } from './app/screens/LoginScreen';
@@ -38,9 +43,9 @@ export default function App() {
 
   // Load fonts
   const [fontsLoaded] = useFonts({
-    'SpaceGrotesk-Regular': require('@expo-google-fonts/space-grotesk/SpaceGrotesk_400Regular.ttf'),
-    'SpaceGrotesk-Medium': require('@expo-google-fonts/space-grotesk/SpaceGrotesk_500Medium.ttf'),
-    'SpaceGrotesk-Bold': require('@expo-google-fonts/space-grotesk/SpaceGrotesk_700Bold.ttf'),
+    'SpaceGrotesk-Regular': SpaceGrotesk_400Regular,
+    'SpaceGrotesk-Medium': SpaceGrotesk_500Medium,
+    'SpaceGrotesk-Bold': SpaceGrotesk_700Bold,
   });
 
   useEffect(() => {
