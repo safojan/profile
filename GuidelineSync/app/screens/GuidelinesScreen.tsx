@@ -10,6 +10,8 @@ import { FlashList } from '@shopify/flash-list';
 import { theme } from '../theme';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+import { Card, StatCard } from '../components/Card';
+import { MetricCard, GuidelineCountCard, TrustCard } from '../components/MetricCard';
 import { GuidelineCard } from '../components/GuidelineCard';
 import { guidelinesApi } from '../services/api';
 import { Guideline, GuidelineFilters, PaginationParams } from '../types';
@@ -132,6 +134,7 @@ export const GuidelinesScreen: React.FC<GuidelinesScreenProps> = ({
 
   return (
     <View style={styles.container}>
+      {/* Header Section */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.title}>Clinical Guidelines</Text>
@@ -145,12 +148,26 @@ export const GuidelinesScreen: React.FC<GuidelinesScreenProps> = ({
             />
           )}
         </View>
+        
+        {/* Search Input */}
         <Input
           placeholder="Search guidelines, trusts, specialties..."
           value={searchQuery}
           onChangeText={handleSearch}
           containerStyle={styles.searchContainer}
         />
+      </View>
+
+      {/* Stats Cards Section */}
+      <View style={styles.statsSection}>
+        <View style={styles.statsRow}>
+          <GuidelineCountCard count={guidelines.length} />
+          <TrustCard 
+            trustName="Active Trusts" 
+            guidelineCount={new Set(guidelines.map(g => g.trustName)).size}
+            color={theme.colors.info}
+          />
+        </View>
       </View>
 
       <FlashList
@@ -184,23 +201,25 @@ const styles = StyleSheet.create({
   },
   
   header: {
-    padding: theme.spacing.lg,
-    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.screenPadding,
+    backgroundColor: theme.colors.backgroundCard,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.divider,
+    borderBottomColor: theme.colors.border,
   },
   
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.lg,
   },
   
   title: {
-    ...theme.textPresets.h2,
+    fontSize: 28,
+    fontWeight: '700',
     color: theme.colors.text,
     flex: 1,
+    fontFamily: 'SpaceGrotesk-Bold',
   },
   
   adminButton: {
@@ -209,6 +228,16 @@ const styles = StyleSheet.create({
   
   searchContainer: {
     marginBottom: 0,
+  },
+  
+  statsSection: {
+    paddingHorizontal: theme.spacing.screenPadding,
+    paddingVertical: theme.spacing.md,
+  },
+  
+  statsRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
   },
   
   listContent: {

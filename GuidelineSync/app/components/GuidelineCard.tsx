@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { theme } from '../theme';
 import { Guideline, MedicalSpeciality } from '../types';
+import { Card } from './Card';
 
 interface GuidelineCardProps {
   guideline: Guideline;
@@ -21,18 +22,28 @@ const getSpecialityColor = (speciality: MedicalSpeciality): string => {
     oncology: theme.colors.oncology,
     pediatrics: theme.colors.pediatrics,
     emergency: theme.colors.emergency,
-    surgery: theme.colors.primary,
-    psychiatry: theme.colors.secondary,
-    dermatology: theme.colors.warning,
-    orthopedics: theme.colors.info,
-    radiology: theme.colors.primary,
-    pathology: theme.colors.secondary,
-    anesthesiology: theme.colors.warning,
-    general_medicine: theme.colors.primary,
+    surgery: theme.colors.surgery,
+    psychiatry: theme.colors.psychiatry,
+    dermatology: theme.colors.dermatology,
+    orthopedics: theme.colors.orthopedics,
+    radiology: theme.colors.radiology,
+    pathology: theme.colors.pathology,
+    anesthesiology: theme.colors.anesthesiology,
+    general_medicine: theme.colors.generalMedicine,
     other: theme.colors.textSecondary,
   };
   
   return specialityColors[speciality] || theme.colors.primary;
+};
+
+const getTrustColor = (trustName: string): string => {
+  const trustColors: Record<string, string> = {
+    "St George's": theme.colors.stGeorges,
+    "Royal London": theme.colors.royalLondon,
+    "Manchester": theme.colors.manchester,
+    "Birmingham": theme.colors.birmingham,
+  };
+  return trustColors[trustName] || theme.colors.primary;
 };
 
 const formatSpecialityName = (speciality: MedicalSpeciality): string => {
@@ -44,93 +55,106 @@ export const GuidelineCard: React.FC<GuidelineCardProps> = ({
   onPress,
 }) => {
   const specialityColor = getSpecialityColor(guideline.medicalSpeciality);
+  const trustColor = getTrustColor(guideline.trustName);
   
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={() => onPress(guideline)}
-      activeOpacity={0.7}
-    >
-      <View style={styles.header}>
-        <View style={styles.titleContainer}>
+    <TouchableOpacity onPress={() => onPress(guideline)} activeOpacity={0.7}>
+      <Card style={styles.container}>
+        {/* Header with trust indicator and specialty badge */}
+        <View style={styles.header}>
+          <View style={styles.trustRow}>
+            <View style={[styles.trustIndicator, { backgroundColor: trustColor }]} />
+            <Text style={[styles.trustName, { color: trustColor }]}>
+              {guideline.trustName}
+            </Text>
+          </View>
+          
+          <View style={[styles.specialityBadge, { backgroundColor: `${specialityColor}15` }]}>
+            <Text style={[styles.specialityText, { color: specialityColor }]}>
+              {formatSpecialityName(guideline.medicalSpeciality)}
+            </Text>
+          </View>
+        </View>
+        
+        {/* Main content */}
+        <View style={styles.content}>
           <Text style={styles.title} numberOfLines={2}>
             {guideline.title}
           </Text>
-          <Text style={styles.trustName}>{guideline.trustName}</Text>
+          
+          {guideline.description && (
+            <Text style={styles.description} numberOfLines={2}>
+              {guideline.description}
+            </Text>
+          )}
         </View>
         
-        <View style={[styles.specialityBadge, { backgroundColor: specialityColor }]}>
-          <Text style={styles.specialityText}>
-            {formatSpecialityName(guideline.medicalSpeciality)}
-          </Text>
-        </View>
-      </View>
-      
-      {guideline.description && (
-        <Text style={styles.description} numberOfLines={3}>
-          {guideline.description}
-        </Text>
-      )}
-      
-      <View style={styles.footer}>
-        <View style={styles.typeIndicator}>
-          <Text style={styles.typeText}>
-            {guideline.fileType === 'pdf' ? '📄 PDF' : '📝 Text'}
-          </Text>
-        </View>
-        
-        {guideline.tags && guideline.tags.length > 0 && (
-          <View style={styles.tagsContainer}>
-            {guideline.tags.slice(0, 2).map((tag, index) => (
-              <View key={index} style={styles.tag}>
-                <Text style={styles.tagText}>{tag}</Text>
+        {/* Footer with tags and metadata */}
+        <View style={styles.footer}>
+          <View style={styles.leftFooter}>
+            <View style={styles.typeIndicator}>
+              <Text style={styles.typeText}>
+                {guideline.fileType === 'pdf' ? '📄 PDF' : '📝 Text'}
+              </Text>
+            </View>
+            
+            {guideline.tags && guideline.tags.length > 0 && (
+              <View style={styles.tagsContainer}>
+                {guideline.tags.slice(0, 2).map((tag, index) => (
+                  <View key={index} style={styles.tag}>
+                    <Text style={styles.tagText}>{tag}</Text>
+                  </View>
+                ))}
+                {guideline.tags.length > 2 && (
+                  <Text style={styles.moreTagsText}>+{guideline.tags.length - 2}</Text>
+                )}
               </View>
-            ))}
-            {guideline.tags.length > 2 && (
-              <Text style={styles.moreTagsText}>+{guideline.tags.length - 2}</Text>
             )}
           </View>
-        )}
-      </View>
-      
-      <Text style={styles.updatedAt}>
-        Updated {new Date(guideline.updatedAt).toLocaleDateString()}
-      </Text>
+          
+          <Text style={styles.updatedAt}>
+            {new Date(guideline.updatedAt).toLocaleDateString()}
+          </Text>
+        </View>
+        
+        {/* Accent border */}
+        <View style={[styles.accentBorder, { backgroundColor: specialityColor }]} />
+      </Card>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    ...theme.shadows.sm,
+    position: 'relative',
+    marginHorizontal: theme.spacing.screenMargin,
+    marginVertical: theme.spacing.sm,
   },
   
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: theme.spacing.sm,
+    alignItems: 'center',
+    marginBottom: theme.spacing.md,
   },
   
-  titleContainer: {
+  trustRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
+  },
+  
+  trustIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     marginRight: theme.spacing.sm,
   },
   
-  title: {
-    ...theme.textPresets.h3,
-    color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
-  },
-  
   trustName: {
-    ...theme.textPresets.bodySmall,
-    color: theme.colors.textSecondary,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: '600',
+    flex: 1,
   },
   
   specialityBadge: {
@@ -140,16 +164,26 @@ const styles = StyleSheet.create({
   },
   
   specialityText: {
-    ...theme.textPresets.caption,
-    color: theme.colors.textInverse,
+    fontSize: 12,
     fontWeight: '600',
-    fontSize: 10,
+  },
+  
+  content: {
+    marginBottom: theme.spacing.md,
+  },
+  
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.colors.text,
+    lineHeight: 22,
+    marginBottom: theme.spacing.sm,
+    fontFamily: 'SpaceGrotesk-Bold',
   },
   
   description: {
-    ...theme.textPresets.body,
+    fontSize: 14,
     color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.sm,
     lineHeight: 20,
   },
   
@@ -157,50 +191,63 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.xs,
+  },
+  
+  leftFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   
   typeIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginRight: theme.spacing.sm,
   },
   
   typeText: {
-    ...theme.textPresets.caption,
-    color: theme.colors.textSecondary,
+    fontSize: 12,
+    color: theme.colors.textTertiary,
     fontWeight: '500',
   },
   
   tagsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   
   tag: {
-    backgroundColor: theme.colors.background,
-    paddingHorizontal: theme.spacing.xs,
-    paddingVertical: 2,
+    backgroundColor: theme.colors.surfaceVariant,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
     borderRadius: theme.borderRadius.sm,
-    marginLeft: theme.spacing.xs,
+    marginRight: theme.spacing.xs,
   },
   
   tagText: {
-    ...theme.textPresets.caption,
+    fontSize: 11,
     color: theme.colors.textSecondary,
-    fontSize: 10,
+    fontWeight: '500',
   },
   
   moreTagsText: {
-    ...theme.textPresets.caption,
-    color: theme.colors.textLight,
-    marginLeft: theme.spacing.xs,
-    fontSize: 10,
+    fontSize: 11,
+    color: theme.colors.textTertiary,
+    fontWeight: '500',
   },
   
   updatedAt: {
-    ...theme.textPresets.caption,
-    color: theme.colors.textLight,
+    fontSize: 12,
+    color: theme.colors.textTertiary,
     textAlign: 'right',
   },
+  
+  accentBorder: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 3,
+    borderTopLeftRadius: theme.borderRadius.lg,
+    borderBottomLeftRadius: theme.borderRadius.lg,
+  },
 });
-
