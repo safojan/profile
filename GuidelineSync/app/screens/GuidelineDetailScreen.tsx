@@ -6,8 +6,9 @@ import {
   ScrollView,
   Alert,
   Dimensions,
+  Linking,
 } from 'react-native';
-import Pdf from 'react-native-pdf';
+import * as WebBrowser from 'expo-web-browser';
 import { theme } from '../theme';
 import { Button } from '../components/Button';
 import { Guideline } from '../types';
@@ -23,19 +24,23 @@ export const GuidelineDetailScreen: React.FC<GuidelineDetailScreenProps> = ({
   guideline,
   onBack,
 }) => {
-  const [pdfLoading, setPdfLoading] = useState(true);
-  const [pdfError, setPdfError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handlePdfLoadComplete = (numberOfPages: number) => {
-    setPdfLoading(false);
-    console.log(`PDF loaded with ${numberOfPages} pages`);
-  };
+  const handleOpenPdf = async () => {
+    if (!guideline.url) {
+      Alert.alert('Error', 'No PDF URL available');
+      return;
+    }
 
-  const handlePdfError = (error: any) => {
-    setPdfLoading(false);
-    setPdfError(true);
-    console.error('PDF Error:', error);
-    Alert.alert('Error', 'Failed to load PDF. Please try again.');
+    try {
+      setIsLoading(true);
+      await WebBrowser.openBrowserAsync(guideline.url);
+    } catch (error) {
+      console.error('Error opening PDF:', error);
+      Alert.alert('Error', 'Failed to open PDF. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const renderPdfContent = () => {
@@ -47,37 +52,31 @@ export const GuidelineDetailScreen: React.FC<GuidelineDetailScreenProps> = ({
       );
     }
 
-    if (pdfError) {
-      return (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Failed to load PDF</Text>
-          <Button
-            title="Retry"
-            onPress={() => {
-              setPdfError(false);
-              setPdfLoading(true);
-            }}
-            size="small"
-            style={styles.retryButton}
-          />
-        </View>
-      );
-    }
-
     return (
-      <Pdf
-        source={{ uri: guideline.url, cache: true }}
-        style={styles.pdf}
-        onLoadComplete={handlePdfLoadComplete}
-        onError={handlePdfError}
-        onLoadProgress={(percent) => {
-          console.log(`PDF loading: ${Math.round(percent * 100)}%`);
-        }}
-        enablePaging={true}
-        spacing={10}
-        fitPolicy={0}
-        horizontal={false}
-      />
+      <View style={styles.pdfContainer}>
+        <View style={styles.pdfInfo}>
+          <Text style={styles.pdfInfoText}>
+            📄 PDF Document Available
+          </Text>
+          <Text style={styles.pdfDescription}>
+            Tap the button below to open the PDF in your browser for viewing.
+          </Text>
+        </View>
+        
+        <Button
+          title={isLoading ? "Opening PDF..." : "📖 Open PDF Document"}
+          onPress={handleOpenPdf}
+          disabled={isLoading}
+          style={styles.openPdfButton}
+        />
+        
+        {guideline.description && (
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.descriptionTitle}>Description:</Text>
+            <Text style={styles.descriptionText}>{guideline.description}</Text>
+          </View>
+        )}
+      </View>
     );
   };
 
@@ -122,12 +121,6 @@ export const GuidelineDetailScreen: React.FC<GuidelineDetailScreenProps> = ({
 
       {/* Content */}
       <View style={styles.content}>
-        {pdfLoading && guideline.fileType === 'pdf' && (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading PDF...</Text>
-          </View>
-        )}
-        
         {guideline.fileType === 'pdf' ? renderPdfContent() : renderTextContent()}
       </View>
 
@@ -193,10 +186,57 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   
-  pdf: {
+  pdfContainer: {
     flex: 1,
-    width: width,
-    height: height - 200, // Adjust based on header/footer height
+    padding: theme.spacing.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  pdfInfo: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.xl,
+  },
+  
+  pdfInfoText: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: theme.colors.text,
+    marginBottom: theme.spacing.md,
+    textAlign: 'center',
+  },
+  
+  pdfDescription: {
+    fontSize: 16,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  
+  openPdfButton: {
+    marginBottom: theme.spacing.xl,
+    minWidth: 200,
+  },
+  
+  descriptionContainer: {
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.md,
+    width: '100%',
+    maxWidth: 400,
+  },
+  
+  descriptionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.text,
+    marginBottom: theme.spacing.sm,
+  },
+  
+  descriptionText: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    lineHeight: 20,
   },
   
   textContent: {
@@ -272,4 +312,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
