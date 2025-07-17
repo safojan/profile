@@ -14,6 +14,29 @@ import {
 } from '../types';
 import { getStoredToken, removeStoredToken } from '../utils/storage';
 
+// In-memory token storage for synchronous access
+let currentToken: string | null = null;
+
+// Initialize token from storage
+const initializeToken = async () => {
+  currentToken = await getStoredToken();
+};
+
+// Update token in memory and storage
+export const setApiToken = async (token: string) => {
+  currentToken = token;
+  await import('../utils/storage').then(({ storeToken }) => storeToken(token));
+};
+
+// Clear token from memory and storage
+export const clearApiToken = async () => {
+  currentToken = null;
+  await removeStoredToken();
+};
+
+// Initialize token on app start
+initializeToken();
+
 // Create the API instance
 const api = create({
   baseURL: Config.API_URL,
@@ -25,16 +48,15 @@ const api = create({
 
 // Add auth token to requests
 api.addRequestTransform((request) => {
-  const token = getStoredToken();
-  if (token && request.headers) {
-    request.headers.Authorization = `Bearer ${token}`;
+  if (currentToken && request.headers) {
+    request.headers.Authorization = `Bearer ${currentToken}`;
   }
 });
 
 // Handle auth errors
 api.addResponseTransform((response) => {
   if (response.status === 401) {
-    removeStoredToken();
+    clearApiToken();
     // Navigate to login screen
   }
 });
@@ -166,4 +188,3 @@ export const aiChatApi = {
 };
 
 export default api;
-

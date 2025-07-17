@@ -52,11 +52,11 @@ export default function App() {
     async function prepare() {
       try {
         // Check if user is authenticated
-        const authenticated = isAuthenticated();
+        const authenticated = await isAuthenticated();
         setIsLoggedIn(authenticated);
         
         if (authenticated) {
-          const userData = getStoredUserData();
+          const userData = await getStoredUserData();
           setCurrentUser(userData);
         }
       } catch (e) {

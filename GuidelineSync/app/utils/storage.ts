@@ -1,9 +1,6 @@
-import { MMKV } from 'react-native-mmkv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Config } from '../config/env';
 import { User } from '../types';
-
-// Initialize MMKV storage
-const storage = new MMKV();
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -14,44 +11,44 @@ const STORAGE_KEYS = {
 } as const;
 
 // Token management
-export const storeToken = (token: string): void => {
-  storage.set(STORAGE_KEYS.JWT_TOKEN, token);
+export const storeToken = async (token: string): Promise<void> => {
+  await AsyncStorage.setItem(STORAGE_KEYS.JWT_TOKEN, token);
 };
 
-export const getStoredToken = (): string | undefined => {
-  return storage.getString(STORAGE_KEYS.JWT_TOKEN);
+export const getStoredToken = async (): Promise<string | null> => {
+  return await AsyncStorage.getItem(STORAGE_KEYS.JWT_TOKEN);
 };
 
-export const removeStoredToken = (): void => {
-  storage.delete(STORAGE_KEYS.JWT_TOKEN);
+export const removeStoredToken = async (): Promise<void> => {
+  await AsyncStorage.removeItem(STORAGE_KEYS.JWT_TOKEN);
 };
 
 // User data management
-export const storeUserData = (user: User): void => {
-  storage.set(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+export const storeUserData = async (user: User): Promise<void> => {
+  await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
 };
 
-export const getStoredUserData = (): User | null => {
-  const userData = storage.getString(STORAGE_KEYS.USER_DATA);
+export const getStoredUserData = async (): Promise<User | null> => {
+  const userData = await AsyncStorage.getItem(STORAGE_KEYS.USER_DATA);
   return userData ? JSON.parse(userData) : null;
 };
 
-export const removeStoredUserData = (): void => {
-  storage.delete(STORAGE_KEYS.USER_DATA);
+export const removeStoredUserData = async (): Promise<void> => {
+  await AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA);
 };
 
 // Offline guidelines management
-export const storeOfflineGuidelines = (guidelines: any[]): void => {
-  storage.set(STORAGE_KEYS.OFFLINE_GUIDELINES, JSON.stringify(guidelines));
+export const storeOfflineGuidelines = async (guidelines: any[]): Promise<void> => {
+  await AsyncStorage.setItem(STORAGE_KEYS.OFFLINE_GUIDELINES, JSON.stringify(guidelines));
 };
 
-export const getStoredOfflineGuidelines = (): any[] => {
-  const guidelines = storage.getString(STORAGE_KEYS.OFFLINE_GUIDELINES);
+export const getStoredOfflineGuidelines = async (): Promise<any[]> => {
+  const guidelines = await AsyncStorage.getItem(STORAGE_KEYS.OFFLINE_GUIDELINES);
   return guidelines ? JSON.parse(guidelines) : [];
 };
 
-export const removeStoredOfflineGuidelines = (): void => {
-  storage.delete(STORAGE_KEYS.OFFLINE_GUIDELINES);
+export const removeStoredOfflineGuidelines = async (): Promise<void> => {
+  await AsyncStorage.removeItem(STORAGE_KEYS.OFFLINE_GUIDELINES);
 };
 
 // App settings management
@@ -69,29 +66,28 @@ const defaultSettings: AppSettings = {
   notifications: true,
 };
 
-export const storeAppSettings = (settings: Partial<AppSettings>): void => {
-  const currentSettings = getStoredAppSettings();
+export const storeAppSettings = async (settings: Partial<AppSettings>): Promise<void> => {
+  const currentSettings = await getStoredAppSettings();
   const updatedSettings = { ...currentSettings, ...settings };
-  storage.set(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(updatedSettings));
+  await AsyncStorage.setItem(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(updatedSettings));
 };
 
-export const getStoredAppSettings = (): AppSettings => {
-  const settings = storage.getString(STORAGE_KEYS.APP_SETTINGS);
+export const getStoredAppSettings = async (): Promise<AppSettings> => {
+  const settings = await AsyncStorage.getItem(STORAGE_KEYS.APP_SETTINGS);
   return settings ? { ...defaultSettings, ...JSON.parse(settings) } : defaultSettings;
 };
 
 // Clear all stored data (for logout)
-export const clearAllStoredData = (): void => {
-  removeStoredToken();
-  removeStoredUserData();
-  removeStoredOfflineGuidelines();
+export const clearAllStoredData = async (): Promise<void> => {
+  await removeStoredToken();
+  await removeStoredUserData();
+  await removeStoredOfflineGuidelines();
   // Keep app settings
 };
 
 // Check if user is authenticated
-export const isAuthenticated = (): boolean => {
-  const token = getStoredToken();
-  const userData = getStoredUserData();
+export const isAuthenticated = async (): Promise<boolean> => {
+  const token = await getStoredToken();
+  const userData = await getStoredUserData();
   return !!(token && userData);
 };
-

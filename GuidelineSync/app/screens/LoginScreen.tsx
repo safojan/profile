@@ -12,7 +12,8 @@ import { theme } from '../theme';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { authApi } from '../services/api';
-import { storeToken, storeUserData } from '../utils/storage';
+import { storeUserData } from '../utils/storage';
+import { setApiToken } from '../services/api';
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
@@ -53,8 +54,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
       
       if (response.success && response.data) {
         // Store authentication data
-        storeToken(response.data.token);
-        storeUserData(response.data.user);
+        await setApiToken(response.data.token);
+        await storeUserData(response.data.user);
         
         // Navigate to main app
         onLoginSuccess();
@@ -180,4 +181,3 @@ const styles = StyleSheet.create({
     maxWidth: 280,
   },
 });
-
